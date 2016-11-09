@@ -49,10 +49,10 @@ Model.prototype = {
 	completeItem: function (id){
 
 		var item = this.list[id];
-		if (item.isActive){
-			item.isActive=false;
+
+			item.isActive=!item.isActive;
 			this.listModifiedEvent.notify(this.list);
-		}
+		
 	}
 
 
