@@ -2,7 +2,7 @@
 a raw javascript implementation of a todo-list following mvc concepts
 
 The view communicates user interactions to the controller via the observer pattern. The controller notifies the model.
-The model updates the data representation and notifies the controller of the change. The controller then asks the view
+The model updates the data representation and notifies the controller of the change via the observer pattern. The controller then asks the view
 to re-render itself
 
 ##View
