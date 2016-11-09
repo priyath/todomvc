@@ -81,7 +81,7 @@ View.prototype.render = function(list){
 
 	for (var i=0; i<list.length; i++){
 
-		var value = list[i];
+		var value = list[i].item;
 		var li = document.createElement("li");
 		li.innerHTML = value + "<button id=" + i + ">x</button>";
 		ul.appendChild(li);
@@ -94,7 +94,9 @@ function Controller(model,view){
 	//if the item is valid, adds it to the model
 	this.addItem = 
 	function (item){
-		if(item)model.addItem(item)
+		if(item){
+			model.addItem(new TodoItem(item));
+		}
 	};
 
 	//remove item from model
@@ -115,6 +117,13 @@ function Controller(model,view){
 
 	//listener on model. fired when the model is modified
 	model.ListModifiedEvent.attach(this.listModified);
+}
+
+function TodoItem(item){
+
+	this.item = item;
+	this.isActive = true;
+
 }
 
 //initialize app
