@@ -25,7 +25,7 @@ function Model(){
 	this.list = [];
 
 	//Item addition event. Contains observers (controller)
-	this.ListModifiedEvent = new Event(this);
+	this.listModifiedEvent = new Event(this);
 
 }
 
@@ -35,14 +35,27 @@ Model.prototype = {
 	addItem: function (item){
 
 	this.list.push(item);
-	this.ListModifiedEvent.notify(this.list);
+	this.listModifiedEvent.notify(this.list);
 
 	},
-
+ 
+	//remove item from list and notify observers
 	removeItem: function (id){
 		this.list.splice(id,1);
-		this.ListModifiedEvent.notify(this.list);
+		this.listModifiedEvent.notify(this.list);
+	},
+
+	//mark items as complete and  notify observers
+	completeItem: function (id){
+
+		var item = this.list[id];
+		if (item.isActive){
+			item.isActive=false;
+			this.listModifiedEvent.notify(this.list);
+		}
 	}
+
+
 }
  
 //maintains the view. handles rendering
@@ -50,20 +63,20 @@ function View(){
 
 	//button events. can attach listeners which will be notified once the event occurs
 	this.addButtonEvent = new Event(this);
-	this.removeButtonEvent = new Event(this);
+	this.listButtonEvent = new Event(this);
 
 	this.addButton = document.getElementById("addButton");
 	this.listContainer = document.getElementById("mainList");
 
-	//onclick listener triggers button event and notifies all observers. passses text input as args
+	//add item event. notifies all observers. passses text input as args
 	this.addButton.addEventListener('click', (function(){this.addButtonEvent.notify(this.userInput())}).bind(this));
 
-	//parent ul element used to capture li element to be deleted. concept of event propogation
+	//parent ul element used to capture list button events. concept of event propogation
 	this.listContainer.addEventListener('click', 
 		(function(event){
 			var el = event.target; //element that caused event propogation
 			if (el.nodeName=="BUTTON"){
-				this.removeButtonEvent.notify(el.id)
+				this.listButtonEvent.notify(el)
 			}
 		}).bind(this));
 
@@ -81,17 +94,35 @@ View.prototype.render = function(list){
 
 	for (var i=0; i<list.length; i++){
 
-		var value = list[i].item;
+		//build li element and append to ul
+		var listItem = list[i];
+		var value = listItem.item;
 		var li = document.createElement("li");
-		li.innerHTML = value + "<button id=" + i + ">x</button>";
+		li.innerHTML = value + "<button name='remove' id=" + i + ">x</button>" + "<button name='complete' id=" + i + ">&#10003;</button>";
+		
+		//cross out completed items
+		if (!listItem.isActive)
+			li.style.setProperty("text-decoration", "line-through");
 		ul.appendChild(li);
 	}
 }
 
-//fascilitates communication between the view and the model 
+//fascilitates communication between the view and the model, data processing
 function Controller(model,view){
 
-	//if the item is valid, adds it to the model
+	//process list button events. delete/complete
+	this.processListButtonEvent = 
+	function(el){
+
+		//remove item from model
+		if (el.name=="remove")model.removeItem(el.id);
+
+		//mark items as complete
+		else if (el.name=="complete"){
+			model.completeItem(el.id);}
+	}
+
+	//if the item is valid, create an item object and add it to the model
 	this.addItem = 
 	function (item){
 		if(item){
@@ -99,13 +130,7 @@ function Controller(model,view){
 		}
 	};
 
-	//remove item from model
-	this.removeItem =
-	function (id){
-		model.removeItem(id);
-	}
-
-	//item is added to the model. update the view
+	//model modified. update the view
 	this.listModified = 
 	function(list){
 		view.render(list);
@@ -113,12 +138,13 @@ function Controller(model,view){
  
 	//Controller added as observer to events in the view and the model
 	view.addButtonEvent.attach(this.addItem);
-	view.removeButtonEvent.attach(this.removeItem);
+	view.listButtonEvent.attach(this.processListButtonEvent);
 
 	//listener on model. fired when the model is modified
-	model.ListModifiedEvent.attach(this.listModified);
+	model.listModifiedEvent.attach(this.listModified);
 }
 
+//object representation of an item
 function TodoItem(item){
 
 	this.item = item;
