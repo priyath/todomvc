@@ -9,20 +9,20 @@ function View(){
 	this.addButtonEvent = new Event(this);
 	this.listButtonEvent = new Event(this);
 
-	//retrieve dom elements 
-	this.addButton = document.getElementById("addButton");
-	this.listContainer = document.getElementById("mainList");
-	this.bodyElement = document.body;
+	//retrieve dom elements. private variables
+	var addButton = document.getElementById("addButton");
+	var listContainer = document.getElementById("mainList");
+	var bodyElement = document.body;
 
 	//add item event. onclick, addButtonEvent notifies all attached listeners
-	this.addButton.addEventListener('click', 
+	addButton.addEventListener('click', 
 		function(){
 			that.addButtonEvent.notify(that.userInput())
 		});
 
 	//list modification events. delete/complete/show lists
 	//concept of event propogation used to catch button events at the body element
-	this.bodyElement.addEventListener('click',function(event){
+	bodyElement.addEventListener('click',function(event){
 			var el = event.target; //element that caused event propogation
 			if (el.nodeName=="BUTTON"){
 				that.listButtonEvent.notify(el)
