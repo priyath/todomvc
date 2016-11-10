@@ -6,26 +6,22 @@ function View(){
 	//user interaction events. Event object used to implement observer pattern
 	//listeners attached to event object notified once event occurs
 	//observer pattern used for communication between view and controller
-	this.addButtonEvent = new Event(this);
 	this.listButtonEvent = new Event(this);
 
-	//retrieve dom elements. private variables
+	//retrieve dom elements. private
 	var addButton = document.getElementById("addButton");
 	var listContainer = document.getElementById("mainList");
 	var bodyElement = document.body;
 
-	//add item event. onclick, addButtonEvent notifies all attached listeners
-	addButton.addEventListener('click', 
-		function(){
-			that.addButtonEvent.notify(that.userInput())
-		});
-
-	//list modification events. delete/complete/show lists
+	//list modification events. add/delete/complete/show lists
 	//concept of event propogation used to catch button events at the body element
 	bodyElement.addEventListener('click',function(event){
 			var el = event.target; //element that caused event propogation
+			var input = null;
 			if (el.nodeName=="BUTTON"){
-				that.listButtonEvent.notify(el)
+				//if the event is an add operation, pass user input as second arg
+				if (el.name=="add")input=that.userInput();
+				that.listButtonEvent.notify(el,input);
 			}
 		});
 

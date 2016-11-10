@@ -12,8 +12,8 @@ Event.prototype = {
 
 	attach: function(listener){this.listeners.push(listener);
 	},
-	notify: function(val){
+	notify: function(val1,val2){
 				for (var i=0; i<this.listeners.length; i++){
-					(this.listeners[i])(val);}
+					(this.listeners[i])(val1,val2);}
 			}
 }

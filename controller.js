@@ -3,11 +3,18 @@ function Controller(model,view){
 
 	//process list button events. delete/complete/show lists
 	this.processListButtonEvent = 
-	function(el){
+	function(el,input){
 
 		var buttonName = el.name;
+
+		//if input is valid, create an item object and add it to the model
+		if (buttonName=="add"){
+			if(input){
+				model.addItem(new TodoItem(input));
+			}
+		}
 		//remove item from model
-		if (buttonName=="remove")model.removeItem(el.id);
+		else if (buttonName=="remove")model.removeItem(el.id);
 
 		//mark items as complete
 		else if (buttonName=="complete"){
@@ -29,14 +36,6 @@ function Controller(model,view){
 		}
 	}
 
-	//if the item is valid, create an item object and add it to the model
-	this.addItem = 
-	function (item){
-		if(item){
-			model.addItem(new TodoItem(item));
-		}
-	};
-
 	//model modified. update the view
 	this.listModified = 
 	function(list){
@@ -45,7 +44,6 @@ function Controller(model,view){
 
 	//Controller added as observer to events in the view and the model
 	//controller notified via observer pattern on view events and model modification
-	view.addButtonEvent.attach(this.addItem);
 	view.listButtonEvent.attach(this.processListButtonEvent);
 	model.listModifiedEvent.attach(this.listModified);
 }
