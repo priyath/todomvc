@@ -6,7 +6,6 @@ function Controller(model,view){
 	function(el){
 
 		var buttonName = el.name;
-		console.log(buttonName);
 		//remove item from model
 		if (buttonName=="remove")model.removeItem(el.id);
 

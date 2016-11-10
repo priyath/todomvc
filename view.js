@@ -1,6 +1,8 @@
 //maintains the view. handles rendering
 function View(){
 
+	var that = this;//save this context for callbacks
+
 	//user interaction events. Event object used to implement observer pattern
 	//listeners attached to event object notified once event occurs
 	//observer pattern used for communication between view and controller
@@ -13,17 +15,19 @@ function View(){
 	this.bodyElement = document.body;
 
 	//add item event. onclick, addButtonEvent notifies all attached listeners
-	this.addButton.addEventListener('click', (function(){this.addButtonEvent.notify(this.userInput())}).bind(this));
+	this.addButton.addEventListener('click', 
+		function(){
+			that.addButtonEvent.notify(that.userInput())
+		});
 
 	//list modification events. delete/complete/show lists
 	//concept of event propogation used to catch button events at the body element
-	this.bodyElement.addEventListener('click',(function(event){
+	this.bodyElement.addEventListener('click',function(event){
 			var el = event.target; //element that caused event propogation
 			if (el.nodeName=="BUTTON"){
-				console.log("element " + el);
-				this.listButtonEvent.notify(el)
+				that.listButtonEvent.notify(el)
 			}
-		}).bind(this));
+		});
 
 	//function to extract text input
 	this.userInput = function(){
