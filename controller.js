@@ -34,7 +34,13 @@ function Controller(model,view){
 		else if (buttonName=="completeList"){
 			model.showComplete();
 		}
+
+		//clear list
+		else if (buttonName=="reset"){
+			model.clear();
+		}
 	}
+	
 
 	//model modified. update the view
 	this.listModified = 

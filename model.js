@@ -66,5 +66,26 @@ Model.prototype = {
 			else item.visible=false;
 		}
 		this.listModifiedEvent.notify(this.list);
+	},
+
+	clear: function(){
+
+		this.list.length = 0;
+		this.listModifiedEvent.notify(this.list);
+	},
+
+	saveToLocal: function(){
+		console.log("save: " + JSON.stringify(this.list));
+		localStorage.setItem("todoItemsList", JSON.stringify(this.list));
+	},
+
+	remember: function(){
+
+		var localStore = localStorage.getItem("todoItemsList");
+		if (localStore){
+			this.list = JSON.parse(localStore);
+			
+		}
 	}
+
 }
